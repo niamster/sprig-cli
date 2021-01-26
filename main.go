@@ -8,7 +8,7 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	"gopkg.in/yaml.v2"
 )
 
@@ -181,7 +181,9 @@ func merge(a, b map[string]interface{}) map[string]interface{} {
 }
 
 func main() {
+
 	t := template.Must(template.New(*tmplFlag).Funcs(sprig.TxtFuncMap()).Parse(string(tmpl)))
+
 	if err := t.Execute(os.Stdout, data); err != nil {
 		panic(err)
 	}
