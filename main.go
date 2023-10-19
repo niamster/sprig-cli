@@ -1,8 +1,8 @@
 package main
 
 import (
-	"fmt"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"strings"
@@ -15,6 +15,7 @@ import (
 var (
 	datafileFlag = flag.String("data", "", "Datafile")
 	tmplFlag     = flag.String("tmpl", "", "Template")
+	strictFlag   = flag.Bool("strict", false, "Strict YAML unmarshalling (fail if mapping keys contain duplicates)")
 
 	tmpl []byte
 	data map[string]interface{}
@@ -92,7 +93,11 @@ func parse(filepath string) (map[string]interface{}, error) {
 		return nil, err
 	}
 
-	err = yaml.Unmarshal(dataBytes, &d)
+	if *strictFlag {
+		err = yaml.UnmarshalStrict(dataBytes, &d)
+	} else {
+		err = yaml.Unmarshal(dataBytes, &d)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +168,6 @@ func recursivelyStringifyMapKey(v interface{}) (interface{}, error) {
 	}
 	return casted_v, nil
 }
-
 
 // merge takes two maps and merges them. on collision b overwrites a
 func merge(a, b map[string]interface{}) map[string]interface{} {
